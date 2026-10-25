@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Il ciclo della farfalla – Quiz a scelta multipla</title>
+
+<style>
+:root {
+  --ink: #25352e;
+  --green: #287453;
+  --pale: #f3f8ed;
+  --gold: #f2ca68;
+  --line: #d8e7d9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #eef7ed, #fff7e4);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+main {
+  max-width: 850px;
+  margin: auto;
+  padding: 22px 16px 34px;
+}
+
+header {
+  text-align: center;
+}
+
+h1 {
+  font-size: clamp(1.7rem, 4vw, 2.4rem);
+  margin: 0 0 8px;
+}
+
+header p {
+  line-height: 1.5;
+  max-width: 650px;
+  margin: 0 auto 18px;
+}
+
+.panel {
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 8px 22px #26323810;
+}
+
+.progress-wrap {
+  height: 10px;
+  background: #e7eee4;
+  border-radius: 99px;
+  overflow: hidden;
+  margin: 12px 0 18px;
+}
+
+#progress {
+  height: 100%;
+  width: 0;
+  background: var(--green);
+  transition: width .25s;
+}
+
+.topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  font-weight: 750;
+  color: #52665a;
+}
+
+#stageTitle {
+  text-align: center;
+  font-size: 1.45rem;
+  margin: 12px 0 4px;
+}
+
+#question {
+  text-align: center;
+  line-height: 1.5;
+  margin: 0 auto 16px;
+  max-width: 600px;
+}
+
+.options {
+  display: grid;
+  gap: 10px;
+}
+
+.option {
+  width: 100%;
+  text-align: left;
+  background: #fbfdf9;
+  border: 2px solid #d8e5d5;
+  border-radius: 13px;
+  padding: 14px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font: inherit;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.option:hover:not(:disabled) {
+  border-color: #6ca487;
+  background: #f2faf3;
+}
+
+.letter {
+  display: grid;
+  place-items: center;
+  flex: 0 0 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e8f0e4;
+  font-weight: 800;
+}
+
+.option.correct {
+  border-color: #37955b;
+  background: #e7f8eb;
+}
+
+.option.wrong {
+  border-color: #d77b61;
+  background: #fff0e9;
+}
+
+.option:disabled {
+  cursor: default;
+}
+
+.feedback {
+  min-height: 58px;
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f2f6f0;
+  line-height: 1.45;
+}
+
+.feedback.good {
+  background: #e5f6e9;
+  border: 1px solid #abd8b4;
+}
+
+.feedback.bad {
+  background: #fff0e9;
+  border: 1px solid #edc2b2;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+button.control {
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.primary {
+  background: var(--green);
+  color: #fff;
+}
+
+.secondary {
+  background: #e7eee4;
+  color: var(--ink);
+}
+
+button:focus-visible {
+  outline: 3px solid #246f9d;
+  outline-offset: 3px;
+}
+
+#result {
+  text-align: center;
+  display: none;
+}
+
+#result h2 {
+  font-size: 1.8rem;
+}
+
+.small {
+  font-size: .9rem;
+  color: #5c6e63;
+  text-align: center;
+  margin-top: 16px;
+}
+
+@media (max-width: 500px) {
+  .panel {
+    padding: 14px;
+  }
+
+  .option {
+    padding: 11px;
+  }
+
+  .topline {
+    font-size: .9rem;
+  }
+}
+</style>
+</head>
+
+<body>
+<main>
+
+<header>
+  <h1>🦋 Il ciclo della farfalla</h1>
+  <p>
+    Risolvi le 4 domande sul ciclo vitale della farfalla.
+    Per ogni fase scegli <strong>una sola risposta</strong>
+    tra le tre possibilità. Hai 10 minuti!
+  </p>
+</header>
+
+<section class="panel" id="quiz">
+
+  <div class="topline">
+    <span id="counter">Fase 1 di 4</span>
+    <span id="score">Risposte corrette: 0</span>
+  </div>
+
+  <div class="progress-wrap" aria-label="Avanzamento">
+    <div id="progress"></div>
+  </div>
+
+  <h2 id="stageTitle">🥚 La deposizione delle uova</h2>
+
+  <p id="question">Che cosa succede in questa fase?</p>
+
+  <div class="options" id="options"></div>
+
+  <div class="feedback" id="feedback"
+       role="status" aria-live="polite">
+    Leggi le tre possibilità e scegli quella corretta.
+  </div>
+
+  <div class="controls">
+    <button class="control secondary" id="hint">
+      💡 Indizio
+    </button>
+
+    <button class="control primary" id="next" disabled>
+      Prossima fase →
+    </button>
+  </div>
+
+</section>
+
+<section class="panel" id="result" aria-live="polite">
+
+  <h2>🎉 Sfida completata!</h2>
+
+  <p id="finalText"></p>
+
+  <p>
+    Ricorda l'ordine:
+    <strong>
+      deposizione delle uova → nascita dei bruchi →
+      trasformazione in crisalide → la farfalla spiega le ali
+    </strong>.
+  </p>
+
+  <div class="controls">
+    <button class="control primary" id="restart">
+      Gioca di nuovo
+    </button>
+  </div>
+
+</section>
+
+<p class="small">
+  Attività didattica ispirata alle osservazioni naturalistiche
+  di Maria Sibylla Merian.
+</p>
+
+</main>
+
+<script>
+const stages = [
+  {
+    title: '🥚 La deposizione delle uova',
+
+    question: 'Dove e come comincia il ciclo della farfalla?',
+
+    options: [
+      'La farfalla depone le uova, spesso sulle foglie o su altre parti di una pianta.',
+      'La farfalla depone le uova nel terreno, dove vengono ricoperte di terra.',
+      'La farfalla costruisce un piccolo nido e depone le uova al suo interno.'
+    ],
+
+    correct: 0,
+    letter: 'F',
+
+    explanation: 'Esatto! La farfalla adulta depone le uova, spesso su una pianta adatta alla futura larva.',
+
+    hint: 'Pensa a dove il bruco potrà trovare facilmente il suo primo nutrimento.'
+  },
+
+  {
+    title: '🐛 Nascita dei bruchi',
+
+    question: 'Che cosa accade quando le uova si schiudono?',
+
+    options: [
+      'Dalle uova escono piccole farfalle con le ali già formate.',
+      'Dalle uova escono i bruchi, che iniziano a nutrirsi e a crescere.',
+      'Dalle uova escono crisalidi, che si aprono dopo pochi giorni.'
+    ],
+
+    correct: 1,
+    letter: 'A',
+
+    explanation: 'Giusto! Dall’uovo esce una larva, chiamata bruco, che mangia e cresce.',
+
+    hint: 'In questa fase l’insetto è una larva e spesso si nutre delle foglie della pianta.'
+  },
+
+  {
+    title: '🟤 Trasformazione del bruco in crisalide',
+
+    question: 'Che cosa fa il bruco quando è pronto per la fase successiva?',
+
+    options: [
+      'Costruisce un bozzolo e resta un bruco identico al suo interno, senza trasformarsi.',
+      'Si trasforma direttamente in una farfalla adulta, senza passare da un’altra fase.',
+      'Si trasforma in crisalide; al suo interno avvengono i cambiamenti che porteranno alla farfalla adulta.'
+    ],
+
+    correct: 2,
+    letter: 'R',
+
+    explanation: 'Esatto! Nella fase di crisalide avvengono importanti trasformazioni che porteranno alla farfalla adulta.',
+
+    hint: 'È una fase in cui l’insetto resta per lo più fermo mentre il suo corpo cambia.'
+  },
+
+  {
+    title: '🦋 La farfalla spiega le ali',
+
+    question: 'Che cosa succede quando la trasformazione è terminata?',
+
+    options: [
+      'La farfalla adulta esce dalla crisalide e distende le ali, che devono asciugarsi prima del volo.',
+      'La farfalla esce dalla crisalide e vola subito via con le ali ancora ripiegate e bagnate.',
+      'Il bruco esce dalla crisalide e comincia a cercare una pianta su cui diventare farfalla.'
+    ],
+
+    correct: 0,
+    letter: 'F',
+
+    explanation: 'Ben fatto! La farfalla adulta emerge dalla crisalide e distende le ali; prima di volare, le ali devono asciugarsi e indurirsi.',
+
+    hint: 'Pensa a cosa deve fare la farfalla appena esce, prima di poter volare.'
+  }
+];
+
+let current = 0;
+let score = 0;
+let answered = false;
+let hinted = false;
+let earnedLetters = [];
+
+const $ = id => document.getElementById(id);
+
+function render() {
+  answered = false;
+  hinted = false;
+
+  const s = stages[current];
+
+  $('counter').textContent =
+    `Fase ${current + 1} di ${stages.length}`;
+
+  $('score').textContent =
+    `Risposte corrette: ${score}`;
+
+  $('progress').style.width =
+    `${current / stages.length * 100}%`;
+
+  $('stageTitle').textContent = s.title;
+  $('question').textContent = s.question;
+
+  $('feedback').className = 'feedback';
+
+  $('feedback').textContent =
+    'Leggi le tre possibilità e scegli quella corretta.';
+
+  $('next').disabled = true;
+
+  $('next').textContent =
+    current === stages.length - 1
+      ? 'Vedi risultato ✓'
+      : 'Prossima fase →';
+
+  $('options').innerHTML = '';
+
+  s.options.forEach((text, i) => {
+    const b = document.createElement('button');
+
+    b.type = 'button';
+    b.className = 'option';
+
+    b.innerHTML = `
+      <span class="letter">${String.fromCharCode(65 + i)}</span>
+      <span>${text}</span>
+    `;
+
+    b.addEventListener('click', () => choose(i, b));
+
+    $('options').appendChild(b);
+  });
+}
+
+function choose(i, button) {
+  if (answered) return;
+
+  answered = true;
+
+  const s = stages[current];
+
+  const buttons = [
+    ...$('options').querySelectorAll('button')
+  ];
+
+  buttons.forEach((b, j) => {
+    b.disabled = true;
+
+    if (j === s.correct) {
+      b.classList.add('correct');
+    }
+  });
+
+  if (i === s.correct) {
+    score++;
+
+    earnedLetters[current] = s.letter;
+
+    $('feedback').className = 'feedback good';
+
+    $('feedback').textContent =
+      '✅ ' + s.explanation;
+
+  } else {
+    earnedLetters[current] = '';
+
+    button.classList.add('wrong');
+
+    $('feedback').className = 'feedback bad';
+
+    $('feedback').textContent =
+      '❌ Non proprio. ' + s.explanation;
+  }
+
+  $('score').textContent =
+    `Risposte corrette: ${score}`;
+
+  $('progress').style.width =
+    `${(current + 1) / stages.length * 100}%`;
+
+  $('next').disabled = false;
+}
+
+$('hint').addEventListener('click', () => {
+  if (hinted || answered) return;
+
+  hinted = true;
+
+  $('feedback').className = 'feedback';
+
+  $('feedback').textContent =
+    '💡 Indizio: ' + stages[current].hint;
+});
+
+$('next').addEventListener('click', () => {
+  if (!answered) return;
+
+  if (current < stages.length - 1) {
+    current++;
+    render();
+
+  } else {
+    $('quiz').style.display = 'none';
+    $('result').style.display = 'block';
+
+    const msg = score === 4
+      ? 'Perfetto! Hai risposto correttamente a tutte le domande. Le lettere raccolte formano la parola segreta:'
+      : 'Per scoprire la parola segreta devi rispondere correttamente a tutte e quattro le domande. Ripassa le fasi e prova ancora!';
+
+    $('finalText').innerHTML =
+      `Hai totalizzato <strong>${score} risposte corrette su 4.</strong><br>${msg}` +
+
+      (score === 4
+        ? `<div style="font-size:clamp(2rem,8vw,3.5rem);letter-spacing:.18em;font-weight:900;color:#287453;margin:16px 0" aria-label="Parola segreta FARFALLA">FARFALLA 🦋</div>`
+        : '');
+  }
+});
+
+$('restart').addEventListener('click', () => {
+  current = 0;
+  score = 0;
+  earnedLetters = [];
+
+  $('result').style.display = 'none';
+  $('quiz').style.display = 'block';
+
+  render();
+});
+
+render();
+</script>
+
+</body>
+</html>
